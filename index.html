@@ -1,0 +1,438 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<title>new document</title>
+
+<meta name="generator" content="editplus" />
+
+<meta name="author" content="" />
+
+<meta name="keywords" content="" />
+
+<meta name="description" content="" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+</head>
+<script src="jquery.js">
+</script>
+<script>
+
+var indexArray = new Array(
+new Array(1,2,3,4),
+new Array(1,3,2,4),new Array(4,3,1,2),
+new Array(2,4,3,1),new Array(3,1,4,2));
+
+var changeSchemes = new Array(
+	new Array(1,2,3,4),
+	new Array(3,1,2,4),
+	new Array(4,3,2,3),
+	new Array(2,4,3,4)
+	);
+	
+var chosenImageIndex;
+var realSequence = indexArray[0];
+var isStart = false;
+var userAnswer;
+var remainingTime = 0;
+var totalTime = 0;
+var timerTaskId;
+var scores = 0;
+var exchangeNum = 0;
+
+$(document).ready(function(){
+	
+		$("#reset").click(function(){
+			var index = Math.round(Math.random() * 100) % 5;
+			//console.log(index);
+			var indexSequence = indexArray[index];
+			for(var i = 0; i < 4; i++){
+				var picture = indexSequence[i] + ".png";
+				//console.log(picture);
+			$(".i").get(i).src = picture;
+			}
+			
+			document.getElementById("log").innerHTML = "";
+			isStart = false;
+			realSequence = indexSequence;
+			remainingTime = 0;
+			totalTime = 0;
+			$("#t1").get(0).src = "n0.png";
+			$("#t2").get(0).src = "n0.png";
+			$("#t3").get(0).src = "n0.png";
+			scores = 0;
+			exchangeNum = 0;
+			
+			$("#choice1").get(0).style.backgroundColor = "";
+			$("#choice2").get(0).style.backgroundColor = "";
+			$("#choice3").get(0).style.backgroundColor = "";
+			$("#choice4").get(0).style.backgroundColor = "";
+			
+			$(".in").get(chosenImageIndex).src = "";
+		});
+		
+		$("#change").click(function(){
+			if(isStart == false){
+				chosenImageIndex = Math.round(Math.random() * 100) % 4;
+				for(var i = 0; i < 4; i++){
+					if(i == chosenImageIndex){
+						$(".i").get(i).src = "question.png";
+					}
+					else{
+						$(".i").get(i).src = "comment.png";
+					}
+				}
+				isStart = true;
+				
+				timerTaskId = setInterval("startTimer()", 1000);
+			}
+			
+			var schemeIndex = Math.round(Math.random() * 100) % 4;
+			var currentScheme = changeSchemes[schemeIndex];
+			var changeLog = currentScheme[0] + "<-->" 
+			+ currentScheme[1] + "    " 
+			+ currentScheme[2] + "<-->" 
+			+ currentScheme[3] + "<br>";			
+			
+			document.getElementById("log").innerHTML += changeLog;
+			//console.log($("#log").get(0).innerHTML);
+			exchangePosition(realSequence, currentScheme[0] - 1,currentScheme[1] - 1);
+			exchangePosition(realSequence, currentScheme[2] - 1,currentScheme[3] - 1);
+			
+			remainingTime += 30;
+			totalTime += 30;
+			
+			exchangeNum++;
+		});
+		
+		$("#submit").click(function(){
+			clearInterval(timerTaskId);
+			var resultCode;
+			if(userAnswer == realSequence[chosenImageIndex]){
+				scores++;
+				resultCode = "<img src = 'star_good.png'/>";
+				$(".in").get(chosenImageIndex).src = "checkbox.png";
+			}else{
+				resultCode = "<img src = 'star_error.png'/>";
+				$(".in").get(chosenImageIndex).src = "close.png";}
+			console.log(userAnswer);
+			console.log(realSequence[0]+" "+realSequence[1]+" "
+			+realSequence[2]+" "+realSequence[3]+" ");
+			if(remainingTime / totalTime > 0.5){
+				scores++;
+				resultCode += "<img src = 'star_good.png'/>";
+			}else{
+				resultCode += "<img src = 'star_error.png'/>";}
+			if(exchangeNum > 2){
+				scores++;
+				resultCode += "<img src = 'star_good.png'/>";
+			}else{
+				resultCode += "<img src = 'star_error.png'/>";
+				}
+			//console.log(scores);
+			
+			resultCode += "<br>你的分数为："+scores;
+			document.getElementById("log").innerHTML = resultCode;
+			
+			for(var i = 0;i < 4; i++){
+				$(".i").get(i).src = realSequence[i] + ".png";
+			}
+		});
+		
+	});	
+	
+	
+		
+		
+function exchangePosition(array, position1, position2){
+		var temp = array[position1];
+		array[position1] = array[position2];
+		array[position2] = temp;
+		//console.log(array[0]+" "+array[1]+" "+array[2]+" "+array[3]+" ");
+	}
+function startTimer(){
+	var minutes = Math.floor(remainingTime / 60);
+	var seconds = remainingTime - minutes * 60;
+	var str = new String(seconds);
+	//console.log(remainingTime);
+	//console.log(minutes+" "+ seconds);
+	//console.log(str);
+	if(str.length == 2){
+		document.getElementById("t1").src = "n"+minutes+".png";
+		document.getElementById("t2").src = "n"+str.charAt(0)+".png";
+		document.getElementById("t3").src = "n"+str.charAt(1)+".png";
+	}else if(str.length == 1){
+		document.getElementById("t1").src = "n"+minutes+".png";
+		document.getElementById("t2").src = "n0.png";
+		document.getElementById("t3").src = "n"+str.charAt(0)+".png";
+	}
+	remainingTime--;
+}
+</script>
+<style>
+.tableBorder{
+	border-spacing:15px;
+	}
+.firstRowTableData {
+
+	 width: 125px;
+
+	 height: 125px;
+	 border-style:solid;
+	border-width:medium;
+	border-color:#ffef7f;
+	border-radius:20px;
+	position:relative;
+}
+
+.mediumTableData{
+
+	 cursor:pointer;
+
+	 text-align:center;
+
+	 width:125px;
+
+	 height:63px;
+}
+
+.smallTableData{
+
+	 width:62px;
+
+	 height:62px;
+	
+	cursor:pointer;
+	
+}
+
+.body{
+	font-family:Microsoft YaHei;
+	background-image:url(background.jpg);
+	}
+.indicationMark{
+	position:absolute;
+	top:0px;
+}
+#clock{
+	border:medium solid #651FFF;
+	border-radius:15px;
+	}
+#shape{
+	background-image: url(b1.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	color: white;
+	font-size: medium;
+	}
+#answerZone{
+	background-image: url(b2.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	color: #FFF;
+	font-size: medium;
+}
+#reset{
+	border-style:solid;
+	border-width:medium;
+	border-color:#d29500;
+	border-radius:15px;
+}
+#change{
+	border-style:solid;
+	border-width:medium;
+	border-color:#4c8823;
+	border-radius:15px;
+}
+#submit{
+	border-style:solid;
+	border-width:medium;
+	border-color:#1d4999;
+	border-radius:15px;
+}
+#log{
+	border-style:solid;
+	border-width:medium;
+	border-color:#F30;
+	border-radius:20px;
+	text-align:center;
+	vertical-align:top;
+	}
+span{
+	position:relative;
+	top:-18px;
+}
+#chooseBox{
+	border:medium solid #6F3;
+	border-radius:15px;
+	}
+#firstRow1{
+	background-image:url(n1.png);
+	background-position:bottom left;
+	background-repeat:no-repeat;
+}
+#firstRow2{
+	background-image:url(n2.png);
+	background-position:bottom left;
+	background-repeat:no-repeat;
+	}
+#firstRow3{
+	background-image:url(n3.png);
+	background-position:bottom left;
+	background-repeat:no-repeat;
+	}
+#firstRow4{
+	background-image:url(n4.png);
+	background-position:bottom left;
+	background-repeat:no-repeat;
+	}
+</style>
+
+<body class = "body">
+
+<table width="500" height="377" align="center" class="tableBorder">
+	
+  <tr >
+
+    <td class = "firstRowTableData" id = "firstRow1" >
+
+    	<img src = "1.png" class = "i"/>
+        <div class = "indicationMark">
+        	<img class = "in"/>
+        </div>
+    </td>
+
+   	 <td class = "firstRowTableData" id = "firstRow2">
+
+    	<img src = "2.png" class = "i"/>
+		<div class = "indicationMark">
+        	<img class = "in"/>
+        </div>
+    </td>
+
+    <td class = "firstRowTableData" id = "firstRow3">
+
+    	<img src = "3.png" class = "i"/>
+		<div class = "indicationMark">
+        	<img class = "in"/>
+        </div>
+    </td>
+
+    <td class = "firstRowTableData" id = "firstRow4">
+
+    	<img src = "4.png" class = "i"/>
+		<div class = "indicationMark">
+        	<img class = "in"/>
+        </div>
+    </td>
+
+  </tr>
+
+  <tr>
+
+    <td class = "mediumTableData" id = "shape">调换日志</td>
+
+    <td id = "log" width = "250px" height = "252px" rowspan="4" colspan="2">
+    </td>
+
+    <td class = "mediumTableData" id = "answerZone">候选答案</td>
+
+  </tr>
+
+  <tr>
+
+    <td 
+    class = "mediumTableData" 
+    onmouseover="this.style.backgroundColor='#ffffcc';" 
+	onmouseout="this.style.backgroundColor='';"
+    id = "reset"
+    >
+
+    <img src="icon_reset.png" width="50" height="50"/>
+
+    <span>重置</span></td>
+
+    <td rowspan = "2" id = "chooseBox">
+		<table>
+        	<tr>
+            	<td class = "smallTableData"
+                onmouseover="this.style.backgroundColor='#ffffcc';" 
+				onmouseout="this.style.backgroundColor='';">
+                	<img src="1.png" onclick = "
+                    userAnswer = 1;
+                    this.style.backgroundColor = '#6f3';
+                    " class="smallTableData"
+                    id = "choice1"/>
+                 </td>
+                <td class = "smallTableData"
+                onmouseover="this.style.backgroundColor='#ffffcc';" 
+				onmouseout="this.style.backgroundColor='';">
+        			<img src="2.png" 
+                    id = "choice2"
+                    onclick = "userAnswer = 2;
+                    this.style.backgroundColor = '#6f3'" class="smallTableData"/>
+                </td>
+            </tr>
+            <tr>
+            	<td class = "smallTableData"
+                onmouseover="this.style.backgroundColor='#ffffcc';" 
+				onmouseout="this.style.backgroundColor='';">
+                	<img src="3.png" 
+                    id = "choice3"
+                    onclick = "userAnswer = 3;this.style.backgroundColor = '#6f3'"class="smallTableData"/>
+                </td>
+                <td class = "smallTableData"
+                onmouseover="this.style.backgroundColor='#ffffcc';" 
+				onmouseout="this.style.backgroundColor='';">
+                	<img src="4.png" 
+                    id = "choice4"
+                    onclick = "userAnswer = 4;this.style.backgroundColor = '#6f3'"class="smallTableData"/>
+                </td>
+            </tr>
+        </table>
+    </td>
+
+  </tr>
+
+  <tr>
+
+    <td class = "mediumTableData" 
+    onmouseover="this.style.backgroundColor='#ffffcc';" 
+    onmouseout="this.style.backgroundColor='';"
+    id = "change">
+
+    <img src="icon_exchange.png"/>
+
+    <span>调换</span></td>
+
+  </tr>
+
+  <tr>
+
+    <td 
+    class = "mediumTableData" 
+    onmouseover="this.style.backgroundColor='#ffffcc';" 
+	onmouseout="this.style.backgroundColor='';"
+    id = "submit">
+
+    <img src="icon_start.png"/>
+
+    <span>提交</span></td>
+
+    <td class = "mediumTableData" id = "clock">
+    <img id = "t1" src = "n0.png"/>
+    <img src = "collon.png"/>
+    <img id = "t2" src = "n0.png"/>
+    <img id = "t3" src = "n0.png"/>
+    </td>
+
+  </tr>
+
+</table>
+
+</body>
+
+</html>
